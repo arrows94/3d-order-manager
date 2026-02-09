@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="mx-auto max-w-md rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h1 class="text-2xl font-semibold">Admin Login</h1>
+
+    {% if error %}
+      <div class="mt-4 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-red-200">{{ error }}</div>
+    {% endif %}
+
+    <form class="mt-6 space-y-4" method="post" action="/admin/login">
+      <div>
+        <label class="text-sm text-slate-300">Benutzer</label>
+        <input name="username" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" value="{{ admin_user }}" />
+      </div>
+      <div>
+        <label class="text-sm text-slate-300">Passwort</label>
+        <input name="password" type="password" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" />
+      </div>
+      <button class="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Einloggen</button>
+    </form>
+  </div>
+{% endblock %}

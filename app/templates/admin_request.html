@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Auftrag #{{ order.id }}</h1>
+      <div class="mt-1 text-slate-300">
+        Status: <span class="font-medium text-slate-100">{{ order.status }}</span>
+      </div>
+      <div class="mt-1 text-xs text-slate-400">
+        Kunden‑Tracking: <a class="text-cyan-300 underline" href="/r/{{ order.token }}" target="_blank" rel="noreferrer">/r/{{ order.token }}</a>
+      </div>
+    </div>
+
+    <a href="/admin" class="rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Zurück</a>
+  </div>
+
+  <div class="mt-6 grid gap-6 md:grid-cols-3">
+    <section class="md:col-span-2 space-y-4">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <div class="text-xs text-slate-400">Kunde</div>
+            <div class="text-lg font-medium text-slate-100">{{ order.customer_name }}</div>
+            <div class="text-sm text-slate-300">{{ order.customer_email }}</div>
+          </div>
+          <div>
+            <div class="text-xs text-slate-400">Erstellt</div>
+            <div class="text-sm text-slate-300">{{ order.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</div>
+            <div class="text-xs text-slate-500">Updated: {{ order.updated_at.strftime("%Y-%m-%d %H:%M") }} UTC</div>
+          </div>
+        </div>
+
+        <div class="mt-5 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+          <div class="text-sm text-slate-400">Beschreibung</div>
+          <div class="mt-1 whitespace-pre-wrap text-slate-200">{{ order.description }}</div>
+        </div>
+
+        {% if order.model_link %}
+          <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Link</div>
+            <a class="mt-1 block break-all text-cyan-300 underline" href="{{ order.model_link }}" target="_blank" rel="noreferrer">{{ order.model_link }}</a>
+          </div>
+        {% endif %}
+
+        {% if order.image_path %}
+          <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Bild</div>
+            <img class="mt-3 max-h-[520px] rounded-xl border border-white/10 object-contain bg-black/20" src="/{{ order.image_path }}" alt="Upload" />
+          </div>
+        {% endif %}
+
+        {% if order.customer_decision_note %}
+          <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Kunden‑Notiz</div>
+            <div class="mt-1 whitespace-pre-wrap text-slate-200">{{ order.customer_decision_note }}</div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <aside class="space-y-4">
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h2 class="text-xl font-semibold">Aktionen</h2>
+
+        <form class="mt-4 space-y-3" method="post" action="/admin/order/{{ order.id }}/accept">
+          <textarea name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optionaler Admin‑Hinweis…">{{ order.admin_note or "" }}</textarea>
+          <button class="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Annehmen (→ AWAITING_PRICE)</button>
+        </form>
+
+        <form class="mt-3 space-y-3" method="post" action="/admin/order/{{ order.id }}/reject">
+          <textarea name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Ablehnungsgrund / Hinweis…">{{ order.admin_note or "" }}</textarea>
+          <button class="w-full rounded-xl bg-red-500/20 hover:bg-red-500/25 border border-red-500/30 px-4 py-2 text-red-100">Ablehnen</button>
+        </form>
+
+        <div class="mt-5 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+          <div class="text-sm text-slate-400">Preisangebot</div>
+          {% if order.price_cents %}
+            <div class="mt-1 text-2xl font-semibold">{{ price_str }}</div>
+          {% else %}
+            <div class="mt-1 text-slate-300">—</div>
+          {% endif %}
+
+          <form class="mt-3 flex gap-2" method="post" action="/admin/order/{{ order.id }}/set_price">
+            <input name="price_eur" class="flex-1 rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="z.B. 12,50" />
+            <button class="rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Senden</button>
+          </form>
+
+          <div class="mt-2 text-xs text-slate-500">
+            Senden setzt Status auf <span class="text-slate-300">PRICE_SENT</span>.
+          </div>
+        </div>
+
+        <form class="mt-4" method="post" action="/admin/order/{{ order.id }}/complete">
+          <button class="w-full rounded-xl bg-green-500/20 hover:bg-green-500/25 border border-green-500/30 px-4 py-2 text-green-100">
+            Abschließen (nur wenn PRICE_ACCEPTED)
+          </button>
+        </form>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h3 class="text-lg font-semibold">Status‑Cheatsheet</h3>
+        <ul class="mt-3 space-y-2 text-sm text-slate-300">
+          <li><span class="text-slate-100">NEW</span> – neu eingereicht</li>
+          <li><span class="text-slate-100">AWAITING_PRICE</span> – angenommen, Preis fehlt</li>
+          <li><span class="text-slate-100">PRICE_SENT</span> – Preis steht, Kunde entscheidet</li>
+          <li><span class="text-slate-100">PRICE_ACCEPTED</span> – kann produziert werden</li>
+          <li><span class="text-slate-100">COMPLETED</span> – erledigt</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+{% endblock %}

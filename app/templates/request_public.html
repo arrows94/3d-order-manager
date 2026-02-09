@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if not_found %}
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h1 class="text-2xl font-semibold">Nicht gefunden</h1>
+      <p class="mt-2 text-slate-300">Diese Tracking‑Seite existiert nicht (mehr).</p>
+      <a href="/" class="mt-4 inline-block rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Zur Startseite</a>
+    </div>
+  {% else %}
+    <div class="grid gap-6 md:grid-cols-3">
+      <section class="md:col-span-2 rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 class="text-2xl font-semibold">Auftrag von {{ order.customer_name }}</h1>
+            <div class="mt-1 text-sm text-slate-400">Status: <span class="font-medium text-slate-200">{{ order.status }}</span></div>
+          </div>
+          <div class="text-xs text-slate-400">
+            Eingereicht: {{ order.created_at.strftime("%Y-%m-%d %H:%M") }} UTC
+          </div>
+        </div>
+
+        <div class="mt-6 space-y-4">
+          <div class="rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Beschreibung</div>
+            <div class="mt-1 whitespace-pre-wrap text-slate-200">{{ order.description }}</div>
+          </div>
+
+          {% if order.model_link %}
+            <div class="rounded-xl border border-white/10 bg-slate-900/40 p-4">
+              <div class="text-sm text-slate-400">Link</div>
+              <a class="mt-1 block break-all text-cyan-300 underline" href="{{ order.model_link }}" target="_blank" rel="noreferrer">{{ order.model_link }}</a>
+            </div>
+          {% endif %}
+
+          {% if order.image_path %}
+            <div class="rounded-xl border border-white/10 bg-slate-900/40 p-4">
+              <div class="text-sm text-slate-400">Bild</div>
+              <img class="mt-3 max-h-[420px] rounded-xl border border-white/10 object-contain bg-black/20" src="/{{ order.image_path }}" alt="Upload" />
+            </div>
+          {% endif %}
+
+          {% if order.admin_note %}
+            <div class="rounded-xl border border-white/10 bg-slate-900/40 p-4">
+              <div class="text-sm text-slate-400">Admin‑Hinweis</div>
+              <div class="mt-1 whitespace-pre-wrap text-slate-200">{{ order.admin_note }}</div>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+
+      <aside class="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <h2 class="text-xl font-semibold">Preis & Entscheidung</h2>
+
+        {% if order.status in ["NEW", "AWAITING_PRICE"] %}
+          <p class="mt-3 text-slate-300">Dein Auftrag wird geprüft. Sobald es ein Preisangebot gibt, erscheint es hier.</p>
+        {% elif order.status == "REJECTED" %}
+          <p class="mt-3 text-red-200">Der Auftrag wurde abgelehnt.</p>
+        {% elif order.status == "PRICE_SENT" %}
+          <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Preisangebot</div>
+            <div class="mt-1 text-2xl font-semibold">{{ price_str }}</div>
+          </div>
+
+          <form class="mt-4 space-y-3" method="post" action="/r/{{ order.token }}/decision">
+            <textarea name="note" rows="3" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optional: Nachricht an den Admin…"></textarea>
+            <div class="grid gap-2">
+              <button name="decision" value="accept" class="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Preis annehmen</button>
+              <button name="decision" value="reject" class="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Preis ablehnen</button>
+            </div>
+          </form>
+        {% elif order.status == "PRICE_ACCEPTED" %}
+          <p class="mt-3 text-green-200">Preis angenommen. Der Auftrag wird umgesetzt.</p>
+        {% elif order.status == "PRICE_REJECTED" %}
+          <p class="mt-3 text-orange-200">Preis abgelehnt. Du kannst ggf. eine neue Anfrage stellen oder auf Rückmeldung warten.</p>
+        {% elif order.status == "COMPLETED" %}
+          <p class="mt-3 text-green-200">Abgeschlossen. 🎉</p>
+        {% endif %}
+
+        {% if order.customer_decision_note %}
+          <div class="mt-4 rounded-xl border border-white/10 bg-slate-900/40 p-4">
+            <div class="text-sm text-slate-400">Deine Notiz</div>
+            <div class="mt-1 whitespace-pre-wrap text-slate-200">{{ order.customer_decision_note }}</div>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  {% endif %}
+{% endblock %}

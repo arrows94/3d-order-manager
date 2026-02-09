@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold">Admin Dashboard</h1>
+      <p class="mt-1 text-slate-300">Queue, Status und Auftragsdetails.</p>
+    </div>
+
+    <form class="flex flex-wrap gap-2" method="get" action="/admin">
+      <input name="q" value="{{ q }}" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Suche (Name, Mail, Link)…" />
+      <select name="status_filter" class="rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400">
+        <option value="">Alle Status</option>
+        {% for s in statuses %}
+          <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+      <button class="rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Filtern</button>
+    </form>
+  </div>
+
+  <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">
+    <table class="w-full text-sm">
+      <thead class="bg-white/5 text-slate-300">
+        <tr>
+          <th class="px-4 py-3 text-left">ID</th>
+          <th class="px-4 py-3 text-left">Kunde</th>
+          <th class="px-4 py-3 text-left">Status</th>
+          <th class="px-4 py-3 text-left">Erstellt</th>
+          <th class="px-4 py-3 text-left">Aktion</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/10 bg-slate-950/40">
+        {% for o in orders %}
+          <tr class="hover:bg-white/5">
+            <td class="px-4 py-3 text-slate-200">{{ o.id }}</td>
+            <td class="px-4 py-3">
+              <div class="font-medium text-slate-100">{{ o.customer_name }}</div>
+              <div class="text-xs text-slate-400">{{ o.customer_email }}</div>
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-slate-200">{{ o.status }}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-300">{{ o.created_at.strftime("%Y-%m-%d %H:%M") }} UTC</td>
+            <td class="px-4 py-3">
+              <a class="rounded-lg bg-white/10 hover:bg-white/15 border border-white/10 px-3 py-1.5 text-xs" href="/admin/order/{{ o.id }}">Öffnen</a>
+              <a class="ml-2 text-xs text-cyan-300 underline" href="/r/{{ o.token }}" target="_blank" rel="noreferrer">Kunden‑Link</a>
+            </td>
+          </tr>
+        {% endfor %}
+        {% if orders|length == 0 %}
+          <tr><td class="px-4 py-6 text-slate-400" colspan="5">Keine Treffer.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
