@@ -1,5 +1,6 @@
 # 3D Auftragsmanager (self-hosted, Docker)
 
+Bitte nicht verwenden, mit AI geschrieben!
 Kleiner Web‑Service zum Managen von 3D‑Druckaufträgen:
 - Kunden können **Link** und/oder **Bild** hochladen
 - Du siehst alles in einer **Admin‑Queue**
