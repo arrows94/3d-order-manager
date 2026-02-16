@@ -1,3 +1,4 @@
+# app/main.py
 from __future__ import annotations
 
 import os
@@ -7,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Request, Form, UploadFile, File, status
+from fastapi import FastAPI, Request, Form, UploadFile, File, status, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -17,6 +18,7 @@ from sqlmodel import select
 from .db import init_db, session_scope
 from .models import Order, OrderStatus
 from .auth import get_admin_user, get_admin_password, verify_password, is_admin, require_admin
+from .emails import send_email_async, get_new_order_html, get_price_sent_html, get_completed_html
 
 APP_NAME = os.getenv("SITE_NAME", "3D Auftragsmanager")
 DATA_DIR = Path(os.getenv("DATA_DIR", "/data"))
@@ -76,6 +78,7 @@ def index(request: Request):
 @app.post("/submit")
 async def submit(
     request: Request,
+    background_tasks: BackgroundTasks,
     customer_name: str = Form(...),
     customer_email: str = Form(...),
     description: str = Form(...),
@@ -118,6 +121,15 @@ async def submit(
         session.add(order)
         session.commit()
         session.refresh(order)
+
+        # E-Mail in den Hintergrund legen (async)
+        html_content = get_new_order_html(order.customer_name, order.token, APP_NAME)
+        background_tasks.add_task(
+            send_email_async, 
+            f"Auftrag eingegangen - {APP_NAME}", 
+            order.customer_email, 
+            html_content
+        )
 
     return templates.TemplateResponse("submit_success.html", {
         "request": request,
@@ -322,9 +334,10 @@ def admin_accept(
     return RedirectResponse(url=f"/admin/order/{order_id}", status_code=303)
 
 @app.post("/admin/order/{order_id}/set_price")
-def admin_set_price(
+async def admin_set_price(
     request: Request,
     order_id: int,
+    background_tasks: BackgroundTasks,
     price_eur: str = Form(...),
 ):
     redir = require_admin(request)
@@ -353,10 +366,24 @@ def admin_set_price(
         session.add(order)
         session.commit()
 
+        # E-Mail Benachrichtigung
+        price_display = _format_price(order.price_cents, order.currency)
+        html_content = get_price_sent_html(order.customer_name, order.token, price_display)
+        background_tasks.add_task(
+            send_email_async,
+            f"Preisangebot erhalten - {APP_NAME}",
+            order.customer_email,
+            html_content
+        )
+
     return RedirectResponse(url=f"/admin/order/{order_id}", status_code=303)
 
 @app.post("/admin/order/{order_id}/complete")
-def admin_complete(request: Request, order_id: int):
+async def admin_complete(
+    request: Request, 
+    order_id: int, 
+    background_tasks: BackgroundTasks
+):
     redir = require_admin(request)
     if redir:
         return redir
@@ -371,5 +398,14 @@ def admin_complete(request: Request, order_id: int):
             order.updated_at = _now()
             session.add(order)
             session.commit()
+
+            # E-Mail Abschluss
+            html_content = get_completed_html(order.customer_name, order.token)
+            background_tasks.add_task(
+                send_email_async,
+                f"Auftrag fertiggestellt - {APP_NAME}",
+                order.customer_email,
+                html_content
+            )
 
     return RedirectResponse(url=f"/admin/order/{order_id}", status_code=303)
