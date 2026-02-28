@@ -15,28 +15,28 @@
 
       <form class="mt-6 space-y-4" method="post" action="/submit" enctype="multipart/form-data">
         <div>
-          <label class="text-sm text-slate-300">Name</label>
-          <input name="customer_name" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Max Mustermann" />
+          <label for="customer_name" class="text-sm text-slate-300">Name <span class="text-red-400" aria-hidden="true">*</span></label>
+          <input id="customer_name" name="customer_name" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Max Mustermann" />
         </div>
 
         <div>
-          <label class="text-sm text-slate-300">E‑Mail</label>
-          <input name="customer_email" type="email" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="max@beispiel.de" />
+          <label for="customer_email" class="text-sm text-slate-300">E‑Mail <span class="text-red-400" aria-hidden="true">*</span></label>
+          <input id="customer_email" name="customer_email" type="email" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="max@beispiel.de" />
         </div>
 
         <div>
-          <label class="text-sm text-slate-300">Beschreibung</label>
-          <textarea name="description" required rows="5" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Was soll gedruckt werden? Material / Größe / Farbe / Deadline…"></textarea>
+          <label for="description" class="text-sm text-slate-300">Beschreibung <span class="text-red-400" aria-hidden="true">*</span></label>
+          <textarea id="description" name="description" required rows="5" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Was soll gedruckt werden? Material / Größe / Farbe / Deadline…"></textarea>
         </div>
 
         <div>
-          <label class="text-sm text-slate-300">Link zum Modell (optional)</label>
-          <input name="model_link" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="https://… (Printables, Thingiverse, Onshape, Google Drive…)" />
+          <label for="model_link" class="text-sm text-slate-300">Link zum Modell (optional)</label>
+          <input id="model_link" name="model_link" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="https://… (Printables, Thingiverse, Onshape, Google Drive…)" />
         </div>
 
         <div>
-          <label class="text-sm text-slate-300">Bild hochladen (optional)</label>
-          <input name="image" type="file" accept="image/*" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" />
+          <label for="image" class="text-sm text-slate-300">Bild hochladen (optional)</label>
+          <input id="image" name="image" type="file" accept="image/*" class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" />
           <div class="mt-1 text-xs text-slate-400">Max. {{ request.app.state.max_upload_mb if request.app.state else "" }} MB (Konfig: MAX_UPLOAD_MB)</div>
         </div>
 
