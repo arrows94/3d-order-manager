@@ -9,12 +9,12 @@
 
     <form class="mt-6 space-y-4" method="post" action="/admin/login">
       <div>
-        <label class="text-sm text-slate-300">Benutzer</label>
-        <input name="username" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" value="{{ admin_user }}" />
+        <label for="username" class="text-sm text-slate-300">Benutzer <span class="text-red-400" aria-hidden="true">*</span></label>
+        <input id="username" name="username" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" value="{{ admin_user }}" />
       </div>
       <div>
-        <label class="text-sm text-slate-300">Passwort</label>
-        <input name="password" type="password" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" />
+        <label for="password" class="text-sm text-slate-300">Passwort <span class="text-red-400" aria-hidden="true">*</span></label>
+        <input id="password" name="password" type="password" required class="mt-1 w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" />
       </div>
       <button class="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Einloggen</button>
     </form>

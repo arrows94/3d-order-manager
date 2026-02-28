@@ -1,0 +1,6 @@
+venv/
+
+.env
+server.log
+data/
+__pycache__/
