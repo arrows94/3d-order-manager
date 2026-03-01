@@ -1,0 +1,3 @@
+## 2024-03-01 - Form Accessibility in Custom Styled Templates
+**Learning:** Even when custom styling (like Tailwind) is used to position elements, native HTML features like `for` attributes on labels connected to `id` attributes on inputs are easily missed but critical for accessibility. Without them, clicking a label does not focus the input, and screen readers fail to associate the label with the correct input field.
+**Action:** Always ensure that every `<label>` tag has a `for` attribute and every corresponding `<input>` or `<textarea>` has a matching `id` attribute, regardless of how they are visually positioned or styled.
