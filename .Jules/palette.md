@@ -1,0 +1,3 @@
+## 2024-05-15 - Labels missing `for` attributes
+**Learning:** Adding `for` attributes to labels and linking them to `id` attributes on inputs is a critical accessibility fix. It allows screen readers to announce the label when the input is focused, and allows users to click the label to focus the input. Visual indicators for required fields are also helpful for usability.
+**Action:** Always ensure that every `<label>` has a `for` attribute matching the `id` of its corresponding input. Use visual indicators like `*` for required fields, but ensure they are marked `aria-hidden="true"` so screen readers don't read them aloud (since the input itself is already marked `required`).
