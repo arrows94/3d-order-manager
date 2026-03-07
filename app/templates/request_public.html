@@ -62,7 +62,7 @@
           </div>
 
           <form class="mt-4 space-y-3" method="post" action="/r/{{ order.token }}/decision">
-            <textarea name="note" rows="3" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optional: Nachricht an den Admin…"></textarea>
+            <textarea aria-label="Optionale Nachricht an den Admin" name="note" rows="3" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optional: Nachricht an den Admin…"></textarea>
             <div class="grid gap-2">
               <button name="decision" value="accept" class="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Preis annehmen</button>
               <button name="decision" value="reject" class="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Preis ablehnen</button>

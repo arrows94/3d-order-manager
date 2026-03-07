@@ -63,12 +63,12 @@
         <h2 class="text-xl font-semibold">Aktionen</h2>
 
         <form class="mt-4 space-y-3" method="post" action="/admin/order/{{ order.id }}/accept">
-          <textarea name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optionaler Admin‑Hinweis…">{{ order.admin_note or "" }}</textarea>
+          <textarea aria-label="Optionaler Admin‑Hinweis" name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Optionaler Admin‑Hinweis…">{{ order.admin_note or "" }}</textarea>
           <button class="w-full rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 px-4 py-2">Annehmen (→ AWAITING_PRICE)</button>
         </form>
 
         <form class="mt-3 space-y-3" method="post" action="/admin/order/{{ order.id }}/reject">
-          <textarea name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Ablehnungsgrund / Hinweis…">{{ order.admin_note or "" }}</textarea>
+          <textarea aria-label="Ablehnungsgrund oder Hinweis" name="admin_note" rows="2" class="w-full rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="Ablehnungsgrund / Hinweis…">{{ order.admin_note or "" }}</textarea>
           <button class="w-full rounded-xl bg-red-500/20 hover:bg-red-500/25 border border-red-500/30 px-4 py-2 text-red-100">Ablehnen</button>
         </form>
 
@@ -81,7 +81,7 @@
           {% endif %}
 
           <form class="mt-3 flex gap-2" method="post" action="/admin/order/{{ order.id }}/set_price">
-            <input name="price_eur" class="flex-1 rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="z.B. 12,50" />
+            <input aria-label="Preisangebot in Euro" name="price_eur" class="flex-1 rounded-xl bg-slate-900/60 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-cyan-400" placeholder="z.B. 12,50" />
             <button class="rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">Senden</button>
           </form>
 
