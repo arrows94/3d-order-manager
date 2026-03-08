@@ -40,10 +40,31 @@
           <div class="mt-1 text-xs text-slate-400">Max. {{ request.app.state.max_upload_mb if request.app.state else "" }} MB (Konfig: MAX_UPLOAD_MB)</div>
         </div>
 
-        <button class="w-full rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95">
-          Auftrag abschicken
+        <button id="submit-btn" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-400 to-fuchsia-500 px-4 py-2 font-semibold text-slate-950 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-70">
+          <svg id="submit-spinner" class="hidden h-5 w-5 animate-spin text-slate-950" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span id="submit-text">Auftrag abschicken</span>
         </button>
       </form>
+
+      <script>
+        document.querySelector('form[action="/submit"]').addEventListener('submit', function() {
+          const btn = document.getElementById('submit-btn');
+          const spinner = document.getElementById('submit-spinner');
+          const text = document.getElementById('submit-text');
+
+          if (btn && spinner && text) {
+            // Use setTimeout to ensure the form submits before disabling the button
+            setTimeout(() => {
+              btn.disabled = true;
+              spinner.classList.remove('hidden');
+              text.textContent = 'Wird gesendet...';
+            }, 0);
+          }
+        });
+      </script>
     </section>
 
     <aside class="rounded-2xl border border-white/10 bg-white/5 p-6">
