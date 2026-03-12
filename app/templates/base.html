@@ -11,9 +11,13 @@
   <style>
     /* Tiny polish */
     .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.75); }
+    *:focus-visible { outline: 2px solid #22d3ee; outline-offset: 2px; }
+    .spinner { animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
+  <div id="a11y-announcer" aria-live="polite" class="sr-only"></div>
   <header class="sticky top-0 z-20 border-b border-white/10 bg-slate-950/80 glass">
     <div class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2">
@@ -46,5 +50,28 @@
       <div>Made for practical humans. The universe remains chaotic.</div>
     </div>
   </footer>
+
+  <script>
+    document.addEventListener("submit", function(e) {
+      const form = e.target;
+      // Skip forms that have a specific class or handle submission themselves if needed
+      if (form.classList.contains("no-global-submit")) return;
+
+      const submitBtn = form.querySelector('button:not([type="button"])');
+      if (submitBtn && !submitBtn.disabled) {
+        setTimeout(() => {
+          submitBtn.disabled = true;
+          submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+          const originalText = submitBtn.innerText;
+          submitBtn.innerHTML = '<svg class="spinner inline-block h-4 w-4 mr-2 text-current" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>' + originalText;
+
+          const announcer = document.getElementById("a11y-announcer");
+          if (announcer) {
+            announcer.innerText = "Bitte warten, Formular wird gesendet...";
+          }
+        }, 0);
+      }
+    });
+  </script>
 </body>
 </html>
