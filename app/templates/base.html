@@ -11,6 +11,12 @@
   <style>
     /* Tiny polish */
     .glass { backdrop-filter: blur(10px); background: rgba(255,255,255,0.75); }
+
+    /* Global Focus Accessibility */
+    *:focus-visible {
+      outline: 2px solid #22d3ee; /* cyan-400 */
+      outline-offset: 2px;
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100">
@@ -46,5 +52,34 @@
       <div>Made for practical humans. The universe remains chaotic.</div>
     </div>
   </footer>
+
+  <!-- Accessibility / UX: Live region for loading states -->
+  <div id="a11y-live-region" aria-live="polite" class="sr-only"></div>
+
+  <script>
+    // Global Form Submission UX
+    document.addEventListener('submit', function(e) {
+      if (e.defaultPrevented) return;
+
+      const form = e.target;
+      const submitBtn = form.querySelector('button:not([type="button"])');
+      if (submitBtn && !submitBtn.disabled) {
+        setTimeout(() => {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = `
+            <span class="flex items-center justify-center gap-2">
+              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Lädt...
+            </span>
+          `;
+          submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+          document.getElementById('a11y-live-region').textContent = 'Formular wird gesendet, bitte warten...';
+        }, 0);
+      }
+    });
+  </script>
 </body>
 </html>
