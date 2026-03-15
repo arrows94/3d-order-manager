@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, Request, Form, UploadFile, File, status, BackgroundTasks
+from fastapi import FastAPI, Request, Form, UploadFile, File, BackgroundTasks
 from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -17,7 +17,7 @@ from sqlmodel import select
 
 from .db import init_db, session_scope
 from .models import Order, OrderStatus
-from .auth import get_admin_user, get_admin_password, verify_password, is_admin, require_admin
+from .auth import get_admin_user, get_admin_password, verify_password, require_admin
 from .emails import send_email_async, get_new_order_html, get_price_sent_html, get_completed_html
 
 APP_NAME = os.getenv("SITE_NAME", "3D Auftragsmanager")
