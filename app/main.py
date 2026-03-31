@@ -22,6 +22,7 @@ from .emails import send_email_async, get_new_order_html, get_price_sent_html, g
 
 APP_NAME = os.getenv("SITE_NAME", "3D Auftragsmanager")
 DATA_DIR = Path(os.getenv("DATA_DIR", "/data"))
+UPLOADS_DIR = DATA_DIR / "uploads"
 MAX_UPLOAD_MB = int(os.getenv("MAX_UPLOAD_MB", "10"))
 DEFAULT_CURRENCY = os.getenv("DEFAULT_CURRENCY", "EUR")
 
@@ -188,19 +189,39 @@ def customer_decision(
 @app.get("/uploads/{token}/{filename}")
 def get_upload(request: Request, token: str, filename: str):
     filename = _safe_filename(filename)
+
+    # Reject tokens containing path separators or other unexpected characters
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", token or ""):
+        return RedirectResponse(url="/", status_code=303)
+
     with session_scope() as session:
         order = session.exec(select(Order).where(Order.token == token)).first()
 
     if not order or not order.image_path:
         return RedirectResponse(url="/", status_code=303)
 
-    # Ensure requested file matches stored path
-    expected = f"uploads/{token}/{filename}"
-    if order.image_path != expected:
+    # Build and normalize the full path under the uploads directory
+    try:
+        file_path = (UPLOADS_DIR / token / filename).resolve()
+    except (OSError, RuntimeError):
         return RedirectResponse(url="/", status_code=303)
 
-    file_path = DATA_DIR / expected
-    if not file_path.exists():
+    # Ensure the resolved path is within the uploads directory
+    try:
+        relative_to_uploads = file_path.relative_to(UPLOADS_DIR)
+    except ValueError:
+        return RedirectResponse(url="/", status_code=303)
+
+    # Ensure requested file matches stored path relative to DATA_DIR
+    try:
+        relative_to_data = file_path.relative_to(DATA_DIR).as_posix()
+    except ValueError:
+        return RedirectResponse(url="/", status_code=303)
+
+    if order.image_path != relative_to_data:
+        return RedirectResponse(url="/", status_code=303)
+
+    if not file_path.exists() or not file_path.is_file():
         return RedirectResponse(url="/", status_code=303)
 
     # Allow if admin or if user has the token (which is in URL anyway)
